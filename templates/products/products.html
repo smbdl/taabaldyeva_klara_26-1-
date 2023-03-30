@@ -16,7 +16,7 @@
         {% for product in products %}
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                    <img src='{{ product.image.url }}' alt="">
+                    <img style="width: 100%" src='{{ product.image.url }}' alt="">
                     <h5 class="card-title">{{ product.title }}</h5>
                     <h5 class="card-title">Price:{{ product.price }}som</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Rate:{{ product.rate }}</h6>
