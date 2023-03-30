@@ -30,7 +30,8 @@ def product_detail_view(request, id):
         context = {
             'product': product,
             'reviews': product.review_set.all(),
-            'form': ReviewCreateForm
+            'form': ReviewCreateForm,
+            'user': request.user
 
         }
 

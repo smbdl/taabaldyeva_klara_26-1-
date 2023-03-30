@@ -18,6 +18,7 @@ from django.urls import path
 from products.views import main_view, products_view, product_detail_view, product_create_view
 from django.conf import settings
 from django.conf.urls.static import static
+from users.views import register_view, login_view, logout_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,7 +27,11 @@ urlpatterns = [
     path('products/<int:id>/', product_detail_view),
     path('products/create/', product_create_view),
 
+    path('users/register/', register_view),
+    path('users/login/', login_view),
+    path('users/logout/', logout_view),
 ]
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
