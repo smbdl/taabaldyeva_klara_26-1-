@@ -3,18 +3,21 @@ from django.utils.safestring import mark_safe
 from products.forms import ProductCreateForm, ReviewCreateForm
 from products.models import Product, Review
 from products.constants import PAGINATION_LIMIT
+from django.views.generic import ListView, CreateView, DetailView, DeleteView
 
 
 # Create your views here.
 
 
-def main_view(request):
-    if request.method == 'GET':
-        return render(request, 'layouts/index.html')
+class MainPageCPV(ListView):
+    model = Product
 
 
-def products_view(request):
-    if request.method == 'GET':
+class PostCPV(ListView):
+    model = Product
+    template_name = 'products/products.html'
+
+    def get(self, request, **kwargs):
         products = Product.objects.all()
         search = request.GET.get('search')
         page = int(request.GET.get('page', 1))
@@ -39,7 +42,7 @@ def products_view(request):
             'pages': range(1, max_page + 1)
         }
 
-        return render(request, 'products/products.html', context=context)
+        return render(request, self.template_name, context=context)
 
 
 def product_detail_view(request, id):
@@ -99,3 +102,33 @@ def product_create_view(request):
         return render(request, 'products/create.html', context={
             'form': form
         })
+
+
+class ProductCreateCPV(ListView, CreateView):
+    model = Product
+    template_name = 'products/create.html'
+    form_class = ProductCreateForm
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        return {
+            'form': kwargs['form'] if kwargs.get('form') else self.form_class
+        }
+
+    def get(self, request, **kwargs):
+        return render(request, self.template_name, context=self.get_context_data())
+
+    def post(self, request, **kwargs):
+        form = self.form_class(request.POST, request.FILES)
+
+        if form.is_valid():
+            self.model.objects.create(
+                title=form.cleaned_data.get('title'),
+                description=form.cleaned_data.get('description'),
+                rate=form.cleaned_data.get('rate'),
+                image=form.cleaned_data.get('image'),
+                price=form.cleaned_data.get('price'),
+            )
+            return redirect('/products/')
+
+        return render(request, self.template_name,
+                      context=self.get_context_data(form=form))
